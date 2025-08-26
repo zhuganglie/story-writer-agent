@@ -1,0 +1,44 @@
+{
+  "api": {
+    "model": "gemini-2.5-flash",
+    "max_tokens": 4000,
+    "temperature": 0.7,
+    "timeout": 300
+  },
+  "story": {
+    "target_word_count": 3000,
+    "min_word_count": 2000,
+    "max_word_count": 5000,
+    "auto_save": true,
+    "save_frequency": "after_each_stage"
+  },
+  "ui": {
+    "show_progress": true,
+    "interactive_mode": true,
+    "color_output": true,
+    "verbose_logging": false,
+    "language": "en"
+  },
+  "language": {
+    "default": "en",
+    "supported": [
+      "en", "zh", "zh-tw", "es", "fr", "de", "ja", "ko", "it", "pt", "ru", "ar", "hi"
+    ],
+    "auto_detect": false,
+    "preserve_original_names": true,
+    "cultural_adaptation": true
+  },
+  "workflow": {
+    "stages": [
+      "concept_generation",
+      "structure_planning",
+      "character_development",
+      "setting_creation",
+      "draft_generation",
+      "revision_enhancement",
+      "final_polish"
+    ],
+    "allow_stage_skipping": false,
+    "require_user_approval": true
+  }
+}
