@@ -8,6 +8,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from story_writer_agent import StoryWriterAgent
+from localization import get_language_specific_prompts, get_cultural_context
 
 def demo_language_story_generation():
     """Demonstrate story generation in different languages"""
@@ -57,8 +58,8 @@ def demo_language_story_generation():
         # Demonstrate prompt templates
         print("\n📋 Language-Specific Templates Demo:")
         for lang_code in ["en", "zh", "es"]:
-            prompts = agent.get_language_specific_prompts(lang_code)
-            cultural_context = agent.get_cultural_context(lang_code)
+            prompts = get_language_specific_prompts(lang_code)
+            cultural_context = get_cultural_context(lang_code)
             print(f"\n{lang_code.upper()}:")
             print(f"  - Concept generation prompt available: {'Yes' if 'concept_generation' in prompts else 'No'}")
             print(f"  - Cultural context: {'Yes' if cultural_context else 'No'}")
