@@ -16,40 +16,40 @@ An automated AI-powered agent that creates compelling short stories through a st
 
 ## 📋 Workflow Stages
 
-1. **Concept Generation & Ideation**
-   - Generate 5 unique story concepts
-   - User selects and refines chosen concept
-   - Develop protagonists, settings, and thematic direction
+1.  **Concept Generation & Ideation**
+    - Generate 5 unique story concepts
+    - User selects and refines chosen concept
+    - Develop protagonists, settings, and thematic direction
 
-2. **Story Structure Planning**
-   - Create three-act narrative framework
-   - Define key plot points and character arcs
-   - Establish scene-by-scene outline
+2.  **Story Structure Planning**
+    - Create three-act narrative framework
+    - Define key plot points and character arcs
+    - Establish scene-by-scene outline
 
-3. **Character Development Deep-Dive**
-   - Rich character psychology and background
-   - Personality traits and motivations
-   - Dialogue voice development
+3.  **Character Development Deep-Dive**
+    - Rich character psychology and background
+    - Personality traits and motivations
+    - Dialogue voice development
 
-4. **Setting & Atmosphere Creation**
-   - Immersive world-building
-   - Sensory details and mood establishment
-   - Environmental storytelling elements
+4.  **Setting & Atmosphere Creation**
+    - Immersive world-building
+    - Sensory details and mood establishment
+    - Environmental storytelling elements
 
-5. **First Draft Generation**
-   - Complete story draft (2000-5000 words)
-   - Scene-by-scene writing with AI assistance
-   - Natural dialogue and compelling narrative
+5.  **First Draft Generation**
+    - Complete story draft (2000-5000 words)
+    - Scene-by-scene writing with AI assistance
+    - Natural dialogue and compelling narrative
 
-6. **Revision and Enhancement**
-   - Pacing and tension analysis
-   - Character consistency checks
-   - Plot coherence improvements
+6.  **Revision and Enhancement**
+    - Pacing and tension analysis
+    - Character consistency checks
+    - Plot coherence improvements
 
-7. **Final Polish and Proofing**
-   - Grammar and style corrections
-   - Final quality assessment
-   - Publication-ready manuscript
+7.  **Final Polish and Proofing**
+    - Grammar and style corrections
+    - Final quality assessment
+    - Publication-ready manuscript
 
 ## 🛠️ Installation
 
@@ -59,33 +59,33 @@ An automated AI-powered agent that creates compelling short stories through a st
 
 ### Setup
 
-1. **Clone or download the project files**
+1.  **Clone or download the project files**
 
-2. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
+2.  **Install dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-3. **Configure environment (choose one method):**
+3.  **Configure environment (choose one method):**
 
-   **Method A: Using .env file (Recommended)**
-   ```bash
-   # Edit the .env file with your API key
-   GEMINI_API_KEY="your_api_key_here"
-   ```
+    **Method A: Using .env file (Recommended)**
+    Create a `.env` file in the project root and add your API key:
+    ```
+    GEMINI_API_KEY="your_api_key_here"
+    ```
 
-   **Method B: Environment variable**
-   ```bash
-   export GEMINI_API_KEY="your_api_key_here"
-   ```
+    **Method B: Environment variable**
+    ```bash
+    export GEMINI_API_KEY="your_api_key_here"
+    ```
 
-   **Method C: Interactive input**
-   - Run the application and enter your API key when prompted
+    **Method C: Interactive input**
+    - Run the application and enter your API key when prompted.
 
-4. **Get Google Gemini API key:**
-   - Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
-   - Create a new API key
-   - Add it to your `.env` file or set as environment variable
+4.  **Get Google Gemini API key:**
+    - Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+    - Create a new API key
+    - Add it to your `.env` file or set as an environment variable.
 
 ## 🎯 Usage
 
@@ -97,51 +97,59 @@ python story_writer_agent.py
 
 ### Language Features
 
-1. **Demo language functionality:**
-   ```bash
-   python demo_language_story.py
-   ```
+1.  **Demo language functionality:**
+    ```bash
+    python demo_language_story.py
+    ```
 
-2. **Test language features:**
-   ```bash
-   python test_language.py
-   ```
+2.  **Test language features:**
+    ```bash
+    pytest
+    ```
 
 ### Advanced Usage
 
-1. **Run with custom config:**
-   ```bash
-   python story_writer_agent.py --config custom_config.json
-   ```
+1.  **Run with custom config:**
+    ```bash
+    python story_writer_agent.py --config custom_config.json
+    ```
 
-2. **Load existing project:**
-   ```bash
-   python story_writer_agent.py --load story_project_20241201_120000.json
-   ```
+2.  **Load existing project:**
+    ```bash
+    python story_writer_agent.py --load story_project_20241201_120000.json
+    ```
 
-3. **Run specific stages:**
+3.  **Run with a specific language:**
+    ```bash
+    python story_writer_agent.py --language zh-tw
+    ```
+4. **Provide API Key directly:**
    ```bash
-   python story_writer_agent.py --stages 1,3,5
+   python story_writer_agent.py --api-key "your_api_key_here"
    ```
 
 ## 📁 Project Structure
 
 ```
 ├── story_writer_agent.py     # Main agent application
+├── gemini_service.py         # Handles interaction with the Gemini API
+├── data_models.py            # Defines the data structures for the story
+├── localization.py           # Manages multi-language prompts and contexts
 ├── demo_language_story.py    # Language functionality demonstration
-├── test_language.py          # Language feature testing
-├── config.json              # Configuration settings
-├── requirements.txt         # Python dependencies
-├── .env                     # Environment variables (API keys)
-├── README.md                # This documentation
-└── *.json                   # Saved project files
+├── config.json               # Configuration settings
+├── requirements.txt          # Python dependencies
+├── .env                      # Environment variables (API keys)
+├── README.md                 # This documentation
+├── tests/                    # Test suite
+│   └── test_story_writer_agent.py
+└── *.json                    # Saved project files
 ```
 
 ## ⚙️ Configuration
 
 Edit `config.json` to customize:
 
-- **API Settings**: Model, tokens, temperature, timeout
+- **API Settings**: Model (e.g., `gemini-1.5-flash`), tokens, temperature, timeout
 - **Story Parameters**: Word count targets, auto-save frequency
 - **UI Preferences**: Progress display, interaction mode, colors, logging
 - **🌐 Language Settings**: Default language, supported languages, cultural adaptation
@@ -185,7 +193,7 @@ The system supports 13 languages with cultural context awareness:
 
 ### Demo and Testing
 - **Language Demo**: `python demo_language_story.py` - See all supported features
-- **Functionality Test**: `python test_language.py` - Test language selection and prompts
+- **Functionality Test**: `pytest` - Test language selection and prompts
 
 ### Benefits
 - **Global Accessibility**: Create stories in users' native languages
@@ -211,27 +219,27 @@ The system supports 13 languages with cultural context awareness:
 
 ### Common Issues
 
-1. **API Key Errors**
-   - Verify your Gemini API key is correct
-   - Check your API quota limits
-   - Ensure the key has proper permissions
+1.  **API Key Errors**
+    - Verify your Gemini API key is correct
+    - Check your API quota limits
+    - Ensure the key has proper permissions
 
-2. **Content Generation Issues**
-   - Check your internet connection
-   - Try reducing the token limit in config
-   - Verify the model name is correct
+2.  **Content Generation Issues**
+    - Check your internet connection
+    - Try reducing the token limit in config
+    - Verify the model name is correct
 
-3. **File Permission Errors**
-   - Ensure write permissions in the working directory
-   - Check if project files are corrupted
+3.  **File Permission Errors**
+    - Ensure write permissions in the working directory
+    - Check if project files are corrupted
 
 ### Getting Help
 
 If you encounter issues:
-1. Check the error messages for specific details
-2. Verify your configuration settings
-3. Try running with verbose logging enabled
-4. Check your API key validity and quota
+1.  Check the error messages for specific details
+2.  Verify your configuration settings
+3.  Try running with verbose logging enabled
+4.  Check your API key validity and quota
 
 ## 📊 Example Workflow Output
 
@@ -264,11 +272,11 @@ Select a concept to develop (1-5): 2
 
 This project demonstrates AI-assisted creative writing. To contribute:
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your improvements
-4. Test thoroughly
-5. Submit a pull request
+1.  Fork the repository
+2.  Create a feature branch
+3.  Make your improvements
+4.  Test thoroughly
+5.  Submit a pull request
 
 ## 📄 License
 
