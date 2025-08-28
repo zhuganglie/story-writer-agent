@@ -30,7 +30,7 @@ class GenerationRequest:
     """Request object for content generation"""
     prompt: str
     max_tokens: int = 4000
-    temperature: float = 0.7
+    temperature: float = 0.9
     cache_key: Optional[str] = None
     retry_count: int = 0
     metadata: Dict[str, Any] = None
@@ -148,7 +148,18 @@ class GeminiService:
             self.model = genai.GenerativeModel(self._api_config["model"])
             logger.info(f"Initialized Gemini API with model: {self._api_config['model']}")
         except Exception as e:
-            raise GeminiServiceError(f"Failed to initialize Gemini API: {e}") from e
+            # Try fallback models if the configured model fails
+            fallback_models = ["gemini-pro", "gemini-1.5-pro-latest", "gemini-1.0-pro"]
+            for fallback_model in fallback_models:
+                try:
+                    self.model = genai.GenerativeModel(fallback_model)
+                    logger.warning(f"Failed to initialize {self._api_config['model']}, using fallback model: {fallback_model}")
+                    return
+                except Exception:
+                    continue
+            
+            # If all fallbacks fail, raise the original error
+            raise GeminiServiceError(f"Failed to initialize Gemini API with model {self._api_config['model']} and fallback models: {e}") from e
 
     def _should_use_cache(self) -> bool:
         """Check if caching is enabled and available"""

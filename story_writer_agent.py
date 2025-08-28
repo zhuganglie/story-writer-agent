@@ -255,11 +255,16 @@ class StoryWriterAgent:
         enhanced_prompt += prompt
 
         try:
-            return await self.gemini_service.generate_content(
+            response = await self.gemini_service.generate_content(
                 enhanced_prompt,
                 max_tokens,
                 temperature=self.config.api.temperature
             )
+            
+            # Log response for debugging (first 500 characters)
+            logger.debug(f"AI response received ({len(response.content)} chars): {response.content[:500]}{'...' if len(response.content) > 500 else ''}")
+            
+            return response
         except GeminiServiceError as e:
             logger.error(f"Content generation failed: {e}")
             raise StoryWriterError(f"Failed to generate content: {e}") from e
@@ -454,7 +459,12 @@ class StoryWriterAgent:
 
         if not concepts:
             # Fallback: generate simpler concepts
-            self.console.print("[yellow]⚠️ Initial generation failed, trying simpler approach...[/yellow]")
+            self.console.print("[yellow]⚠️ Initial generation format didn't match expectations, trying alternative parsing...[/yellow]")
+            concepts = self._parse_concepts_fallback(concepts_text)
+
+        if not concepts:
+            # Second fallback: generate simpler concepts
+            self.console.print("[yellow]⚠️ Concept parsing failed, trying simpler approach...[/yellow]")
             simple_prompt = "Generate 3 simple story ideas with title, genre, and basic conflict."
 
             try:
@@ -464,10 +474,15 @@ class StoryWriterAgent:
                 raise StoryWriterError(f"Concept generation completely failed: {e}") from e
 
         if not concepts:
-            raise StoryWriterError("Could not generate any valid concepts")
+            # Log the actual response for debugging
+            logger.warning(f"AI response was: {concepts_text[:500]}{'...' if len(concepts_text) > 500 else ''}")
+            raise StoryWriterError("Could not generate any valid concepts. The AI response may be empty or in an unexpected format.")
 
         # Display and get selection
         self.display_concept_options(concepts)
+        if not concepts:
+            raise StoryWriterError("No concepts available for selection.")
+            
         selected_idx = self.get_user_choice(concepts, "Select a concept to develop")
 
         if selected_idx is None:
@@ -486,7 +501,12 @@ class StoryWriterAgent:
 
         # Try different parsing strategies
         for line in concepts_text.strip().split('\n'):
-            if '|' in line and len(line.split('|')) >= 4:
+            line = line.strip()
+            if not line:
+                continue
+                
+            # Try pipe-separated format first
+            if '|' in line:
                 try:
                     parts = [part.strip() for part in line.split('|')]
                     if len(parts) >= 4:
@@ -497,9 +517,39 @@ class StoryWriterAgent:
                             central_conflict=parts[3]
                         )
                         concepts.append(concept)
+                        continue
                 except Exception as e:
-                    logger.warning(f"Failed to parse concept line: {line}. Error: {e}")
-                    continue
+                    logger.warning(f"Failed to parse pipe-separated concept line: {line}. Error: {e}")
+            
+            # Try numbered list format (e.g., "1. Title - Genre: Premise (Conflict)")
+            if re.match(r'^\d+\.', line):
+                try:
+                    # Extract title (everything before " - ")
+                    title_match = re.match(r'^\d+\.\s*([^-\n]+?)\s*-\s*', line)
+                    if title_match:
+                        title = title_match.group(1).strip()
+                        rest = line[title_match.end():].strip()
+                        
+                        # Extract genre (between "Genre:" and next colon or parenthesis)
+                        genre_match = re.search(r'Genre:\s*([^:\n]*?)(?:\s*\(|$)', rest)
+                        genre = genre_match.group(1).strip() if genre_match else "Fiction"
+                        
+                        # Extract premise and conflict
+                        premise_conflict_match = re.search(r'([^(\n]*?)\s*(?:$$(.*?)$$)?', rest)
+                        if premise_conflict_match:
+                            premise = premise_conflict_match.group(1).strip()
+                            conflict = premise_conflict_match.group(2) if premise_conflict_match.group(2) else premise
+                            
+                            concept = StoryConcept(
+                                title=title,
+                                genre=genre,
+                                premise=premise,
+                                central_conflict=conflict
+                            )
+                            concepts.append(concept)
+                            continue
+                except Exception as e:
+                    logger.warning(f"Failed to parse numbered concept line: {line}. Error: {e}")
 
         return concepts
 
@@ -515,7 +565,7 @@ class StoryWriterAgent:
 
             # Look for numbered items or titles
             if re.match(r'^\d+\.', line) or line.isupper():
-                if current_concept:
+                if current_concept and 'title' in current_concept:
                     try:
                         concept = StoryConcept(
                             title=current_concept.get('title', 'Untitled'),
@@ -524,10 +574,14 @@ class StoryWriterAgent:
                             central_conflict=current_concept.get('conflict', 'Internal struggle')
                         )
                         concepts.append(concept)
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        logger.warning(f"Failed to create concept from {current_concept}. Error: {e}")
 
-                current_concept = {'title': re.sub(r'^\d+\.\s*', '', line)}
+                # Extract title from numbered items
+                if re.match(r'^\d+\.', line):
+                    current_concept = {'title': re.sub(r'^\d+\.\s*', '', line)}
+                else:
+                    current_concept = {'title': line}
 
             elif 'genre' in line.lower():
                 current_concept['genre'] = line.split(':', 1)[-1].strip()
@@ -535,9 +589,11 @@ class StoryWriterAgent:
                 current_concept['premise'] = line.split(':', 1)[-1].strip()
             elif 'conflict' in line.lower():
                 current_concept['conflict'] = line.split(':', 1)[-1].strip()
+            elif 'title' in line.lower() and 'title' not in current_concept:
+                current_concept['title'] = line.split(':', 1)[-1].strip()
 
         # Add the last concept
-        if current_concept:
+        if current_concept and 'title' in current_concept:
             try:
                 concept = StoryConcept(
                     title=current_concept.get('title', 'Untitled'),
@@ -546,8 +602,8 @@ class StoryWriterAgent:
                     central_conflict=current_concept.get('conflict', 'Internal struggle')
                 )
                 concepts.append(concept)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning(f"Failed to create final concept from {current_concept}. Error: {e}")
 
         return concepts
 

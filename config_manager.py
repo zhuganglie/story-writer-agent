@@ -17,9 +17,9 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ApiConfig:
     """API configuration with validation"""
-    model: str = "gemini-2.5-flash"
+    model: str = "gemini-2.5-pro"
     max_tokens: int = 4000
-    temperature: float = 0.7
+    temperature: float = 0.9
     timeout: int = 300
     enable_cache: bool = True
     rate_limit_delay: float = 1.0
@@ -150,9 +150,9 @@ class ConfigManager:
         """Get default configuration as dictionary with caching"""
         return {
             "api": {
-                "model": "gemini-2.5-flash",
+                "model": "gemini-2.5-pro",
                 "max_tokens": 4000,
-                "temperature": 0.7,
+                "temperature": 0.9,
                 "timeout": 300,
                 "enable_cache": True,
                 "rate_limit_delay": 1.0,
